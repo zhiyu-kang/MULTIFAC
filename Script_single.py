@@ -1,4 +1,4 @@
-from SingleTensor import *
+from SingleTensor_functions import *
 
 def main(args):
     if args.action=='simulation': #simulate couple tensors and calculate initial factor matrices  
