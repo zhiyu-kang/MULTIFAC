@@ -1,4 +1,4 @@
-from CoupleTensor_functions import *
+from MULTIFAC_functions import *
 
 def main(args):
     if args.action=='simulation': #simulate couple tensors and calculate initial factor matrices
@@ -171,35 +171,9 @@ def main(args):
         cp_con_best = cp_linked(tensor1, tensor2, {}, A1, A2, ranks, sigma_constraint, args.cutoff, args.maxiter, [1], args.task)
         ranks_con_best = rank_identifier(cp_con_best['A1'], cp_con_best['A2'])
 
-        # shared and individual simulation result
-        if (args.tensor1 == 'None') & (args.tensor2 == 'None'):
-            RSE_sigma = [rse(signal1, cp_sigma['estTensor1']), rse(signal2, cp_sigma['estTensor2'])]
-            RSE_con = [rse(signal1, cp_con['estTensor1']), rse(signal2, cp_con['estTensor2'])]
-            RSE_con_same = [rse(signal1, cp_con_same['estTensor1']), rse(signal2, cp_con_same['estTensor2'])]
-            RSE_con_best = [rse(signal1, cp_con_best['estTensor1']), rse(signal2, cp_con_best['estTensor2'])]
-            
-            # shared structure
-            shared_RSE_sigma = [rse(shared1, cp_sigma['estShared1']), rse(shared2, cp_sigma['estShared2'])]
-            shared_RSE_con = [rse(shared1, cp_con['estShared1']), rse(shared2, cp_con['estShared2'])]
-            shared_RSE_con_same = [rse(shared1, cp_con_same['estShared1']), rse(shared2, cp_con_same['estShared2'])]
-            shared_RSE_con_best = [rse(shared1, cp_con_best['estShared1']), rse(shared2, cp_con_best['estShared2'])]
-
-            # individual structure
-            indiv_RSE_sigma = [rse(indiv1, cp_sigma['estIndiv1']), rse(indiv2, cp_sigma['estIndiv2'])]
-            indiv_RSE_con = [rse(indiv1, cp_con['estIndiv1']), rse(indiv2, cp_con['estIndiv2'])]
-            indiv_RSE_con_same = [rse(indiv1, cp_con_same['estIndiv1']), rse(indiv2, cp_con_same['estIndiv2'])]
-            indiv_RSE_con_best = [rse(indiv1, cp_con_best['estIndiv1']), rse(indiv2, cp_con_best['estIndiv2'])]
-
-            column_names = ['Task', 'RSE1', 'RSE1', 'shared_RSE1', 'shared_RSE2', 'indiv_RSE1', 'indiv_RSE2', 'sigma', 'rank']
-            result_sigma = np.array([args.task] + RSE_sigma + shared_RSE_sigma + indiv_RSE_sigma + [sigma_1se] + ranks)
-            result_con = np.array([args.task] + RSE_con + shared_RSE_con + indiv_RSE_con + [small_sigma] + ranks_con)
-            result_con_same = np.array([args.task] + RSE_con_same + shared_RSE_con_same + indiv_RSE_con_same + [sigma_1se] + ranks_con_same)
-            result_con_best = np.array([args.task] + RSE_con_best + shared_RSE_con_best + indiv_RSE_con_best + [sigma_constraint] + ranks_con_best)
-            
-            write_to_csv("Summary_complete_sigma.csv", np.round(result_sigma, 6), column_names)
-            write_to_csv("Summary_complete_con.csv", np.round(result_con, 6), column_names)
-            write_to_csv("Summary_complete_con_best.csv", np.round(result_con_best, 6), column_names)
-            write_to_csv("Summary_complete_con_same.csv", np.round(result_con_same, 6), column_names)
+        final_result = {'A1': cp_con_best['A1'], 'A2': cp_con_best['A2'], 'estTensor1': cp_con_best['estTensor1'], 'estTensor2': cp_con_best['estTensor2'], 'estShared1': cp_con_best['estShared1'], 'estShared2': cp_con_best['estShared2'], 'estIndiv1': cp_con_best['estIndiv1'], 'estIndiv2': cp_con_best['estIndiv2'], 'ranks': ranks_con_best}
+        with open("MULTIFAC_result.pkl", "wb") as f:
+            pickle.dump(final_result, f)
 
         
 if __name__ == "__main__":
