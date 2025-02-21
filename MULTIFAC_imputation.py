@@ -1,4 +1,4 @@
-from CoupleTensor_functions import *
+from MULTIFAC_functions import *
 
 # Function to write to the CSV file
 def write_to_csv(csv_file_path, data, column_names):
@@ -224,40 +224,11 @@ def main(args):
         df_constraint = pd.read_csv(score_file_name_constraint, sep=',')
         sigma_constraint = df_constraint['sigma'][df_constraint['mean_RSE'].idxmin()]
         cp_con_best = cp_linked(tensor1, tensor2, {}, A1, A2, ranks, sigma_constraint, args.cutoff, args.maxiter, [1], args.task)
-        ranks_best = rank_identifier(cp_con_best['A1'], cp_con_best['A2'])
+        ranks_con_best = rank_identifier(cp_con_best['A1'], cp_con_best['A2'])
 
-        # shared and individual simulation result
-        if (args.tensor1 == 'None') & (args.tensor2 == 'None'):
-            RSE_sigma = [rse(signal1, cp_sigma['estTensor1'], ~nanInd1), rse(signal2, cp_sigma['estTensor2'], ~nanInd2)]
-            RSE_con = [rse(signal1, cp_con['estTensor1'], ~nanInd1), rse(signal2, cp_con['estTensor2'], ~nanInd2)]
-            RSE_con_same = [rse(signal1, cp_con_same['estTensor1'], ~nanInd1), rse(signal2, cp_con_same['estTensor2'], ~nanInd2)]
-            RSE_con_best = [rse(signal1, cp_con_best['estTensor1'], ~nanInd1), rse(signal2, cp_con_best['estTensor2'], ~nanInd2)]
-            RSE_impute_sigma = [rse(signal1, cp_sigma['estTensor1'], nanInd1), rse(signal2, cp_sigma['estTensor2'], nanInd2)]
-            RSE_impute_con = [rse(signal1, cp_con['estTensor1'], nanInd1), rse(signal2, cp_con['estTensor2'], nanInd2)]
-            RSE_impute_con_best = [rse(signal1, cp_con_best['estTensor1'], nanInd1), rse(signal2, cp_con_best['estTensor2'], nanInd2)]
-            RSE_impute_con_same = [rse(signal1, cp_con_same['estTensor1'], nanInd1), rse(signal2, cp_con_same['estTensor2'], nanInd2)]
-            # entry imputation
-            RSE_impute_entry_sigma = [rse(signal1, cp_sigma['estTensor1'], entry_Ind1), rse(signal2, cp_sigma['estTensor2'], entry_Ind2)]
-            RSE_impute_entry_con = [rse(signal1, cp_con['estTensor1'], entry_Ind1), rse(signal2, cp_con['estTensor2'], entry_Ind2)]
-            RSE_impute_entry_con_best = [rse(signal1, cp_con_best['estTensor1'], entry_Ind1), rse(signal2, cp_con_best['estTensor2'], entry_Ind2)]
-            RSE_impute_entry_con_same = [rse(signal1, cp_con_same['estTensor1'], entry_Ind1), rse(signal2, cp_con_same['estTensor2'], entry_Ind2)]
-            # slice imputation
-            RSE_impute_slice_shared_sigma = [rse(shared1, cp_sigma['estShared1'], slice_Ind1), rse(shared2, cp_sigma['estShared2'], slice_Ind2)]
-            RSE_impute_slice_shared_con = [rse(shared1, cp_con['estShared1'], slice_Ind1), rse(shared2, cp_con['estShared2'], slice_Ind2)]
-            RSE_impute_slice_shared_con_best = [rse(shared1, cp_con_best['estShared1'], slice_Ind1), rse(shared2, cp_con_best['estShared2'], slice_Ind2)]
-            RSE_impute_slice_shared_con_same = [rse(shared1, cp_con_same['estShared1'], slice_Ind1), rse(shared2, cp_con_same['estShared2'], slice_Ind2)]
-            
-            column_names = ['Task', 'RSE1', 'RSE1', 'RSE_impute1', 'RSE_impute2', 'RSE_impute_entry1', 'RSE_impute_entry2', 'sharedRSE_impute_slice1', 'sharedRSE_impute_slice2', 'sigma', 'rank']
-            result_sigma = np.array([args.task] + RSE_sigma + RSE_impute_sigma + RSE_impute_entry_sigma + RSE_impute_slice_shared_sigma + [sigma_1se] + ranks)
-            result_con = np.array([args.task] + RSE_con + RSE_impute_con + RSE_impute_entry_con + RSE_impute_slice_shared_con + [small_sigma] + ranks)
-            result_con_best = np.array([args.task] + RSE_con_best + RSE_impute_con_best + RSE_impute_entry_con_best + RSE_impute_slice_shared_con_best + [sigma_constraint] + ranks_best)
-            result_con_same = np.array([args.task] + RSE_con_same  + RSE_impute_con_same + RSE_impute_entry_con_same + RSE_impute_slice_shared_con_same + [sigma_1se] + ranks)
-
-            write_to_csv("Summary_impute_sigma.csv", np.round(result_sigma, 6), column_names)
-            write_to_csv("Summary_impute_con.csv", np.round(result_con, 6), column_names)
-            write_to_csv("Summary_impute_con_best.csv", np.round(result_con_best, 6), column_names)
-            write_to_csv("Summary_impute_con_same.csv", np.round(result_con_same, 6), column_names)
-
+        final_result = {'A1': cp_con_best['A1'], 'A2': cp_con_best['A2'], 'estTensor1': cp_con_best['estTensor1'], 'estTensor2': cp_con_best['estTensor2'], 'estShared1': cp_con_best['estShared1'], 'estShared2': cp_con_best['estShared2'], 'estIndiv1': cp_con_best['estIndiv1'], 'estIndiv2': cp_con_best['estIndiv2'], 'ranks': ranks_con_best}
+        with open("MULTIFAC_result.pkl", "wb") as f:
+            pickle.dump(final_result, f)
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
