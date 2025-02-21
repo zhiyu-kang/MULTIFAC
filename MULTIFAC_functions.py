@@ -1,14 +1,3 @@
-### update
-### simu_linked(): instead of scaling individual and shared structure, scaling noise.
-### replace lg.inv with lg.pinv x
-### replace 1/best_sigma with 1/sigma_1se
-### added nfolds as parameter
-### added combination of tensro-wise and entry-wise missing.
-### compute average imputation score for tensor-wise missing and entry-wise missing seperately.
-### calculate mean score within each fold, and calculate the se of 10 values instead of 20 values.
-### add a procedure in ALS() to identify tensor-wise missing part.
-### impute entry-wise missing with the estimated tensor structure and tensor-wise missing with the estimated shared structure.
-
 import tensorly as tl
 import tensorly.tenalg as tg
 from tensorly import random
