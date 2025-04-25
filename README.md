@@ -81,4 +81,4 @@ Explanation of parameters:
 ## Citation
 
 If you use MULTIFAC in your research, please cite the relevant paper:
-
+Zhiyu Kang, Raghavendra B. Rao, and Eric F. Lock. *Multiple Linked Tensor Factorization.* arXiv preprint arXiv:2502.20286, 2025. Available at: [https://arxiv.org/abs/2502.20286](https://arxiv.org/abs/2502.20286).
